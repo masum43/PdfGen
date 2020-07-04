@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         myCanvas2.drawText("This should be second page",40,50,myPaint);
         myPdfDocument.finishPage(myPage2);
 
-        File file = new File(Environment.getExternalStorageDirectory(),"/S econdButtonPdf.pdf");
+        File file = new File(Environment.getExternalStorageDirectory(),"/SecondButtonPdf.pdf");
         myPdfDocument.writeTo(new FileOutputStream(file));
         myPdfDocument.close();
     }
