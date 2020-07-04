@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -42,15 +43,48 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @OnClick({R.id.button, R.id.button2})
-    public void onViewClicked(View view) throws IOException {
+    public void onViewClicked(View view)  {
         switch (view.getId()) {
             case R.id.button:
-                createButton1Pdf();
+                try {
+                    createButton1Pdf();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Toast.makeText(this, "Pdf Generated", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.button2:
+                try {
+                    createButton2Pdf();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Toast.makeText(this, "Pdf Generated", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
+
+    private void createButton2Pdf() throws IOException {
+        PdfDocument myPdfDocument = new PdfDocument();
+        Paint myPaint = new Paint();
+
+        PdfDocument.PageInfo myPageInfo = new PdfDocument.PageInfo.Builder(250,400,1).create();
+        PdfDocument.Page myPage1 = myPdfDocument.startPage(myPageInfo);
+        Canvas myCanvas = myPage1.getCanvas();
+        myCanvas.drawText("This should be first page",40,50,myPaint);
+        myPdfDocument.finishPage(myPage1);
+
+        PdfDocument.PageInfo myPageInfo2 = new PdfDocument.PageInfo.Builder(250,400,1).create();
+        PdfDocument.Page myPage2 = myPdfDocument.startPage(myPageInfo2);
+        Canvas myCanvas2 = myPage2.getCanvas();
+        myCanvas2.drawText("This should be second page",40,50,myPaint);
+        myPdfDocument.finishPage(myPage2);
+
+        File file = new File(Environment.getExternalStorageDirectory(),"/S econdButtonPdf.pdf");
+        myPdfDocument.writeTo(new FileOutputStream(file));
+        myPdfDocument.close();
+    }
+
 
     private void createButton1Pdf() throws IOException {
         PdfDocument myPdfDocument = new PdfDocument();
@@ -58,9 +92,8 @@ public class MainActivity extends AppCompatActivity {
 
         PdfDocument.PageInfo myPageInfo = new PdfDocument.PageInfo.Builder(250,400,1).create();
         PdfDocument.Page myPage1 = myPdfDocument.startPage(myPageInfo);
-
         Canvas myCanvas = myPage1.getCanvas();
-        myCanvas.drawText("First Button click",40,50,myPaint);
+        myCanvas.drawText("Simple pdf",40,50,myPaint);
         myPdfDocument.finishPage(myPage1);
 
         File file = new File(Environment.getExternalStorageDirectory(),"/FirstButtonPdf.pdf");
@@ -68,4 +101,6 @@ public class MainActivity extends AppCompatActivity {
         myPdfDocument.close();
 
     }
+
+
 }
