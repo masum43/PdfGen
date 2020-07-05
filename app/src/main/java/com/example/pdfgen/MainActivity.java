@@ -1,6 +1,7 @@
 package com.example.pdfgen;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,7 +19,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     String[] infoArray = new String[]{"Name", "Company Name", "Address", "Phone", "Email"};
     @BindView(R.id.button4)
     Button imageOnPdfBtn;
+    @BindView(R.id.buttonInvoice)
+    Button buttonInvoice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @OnClick({R.id.button, R.id.button2,R.id.button3,R.id.button4})
+    @OnClick({R.id.button, R.id.button2, R.id.button3, R.id.button4})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.button:
@@ -72,13 +74,13 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Pdf Generated", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.button3:
-                    try {
-                        createCustomerInfoPdf();
-                        Toast.makeText(this, "Generated successfully...", Toast.LENGTH_SHORT).show();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    break;
+                try {
+                    createCustomerInfoPdf();
+                    Toast.makeText(this, "Generated successfully...", Toast.LENGTH_SHORT).show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
             case R.id.button4:
                 try {
                     createImagePdf();
@@ -89,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
-
 
 
     private void createButton1Pdf() throws IOException {
@@ -191,8 +192,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createImagePdf() throws IOException {
-        Bitmap bmp = BitmapFactory.decodeResource(getResources(),R.drawable.img);
-        Bitmap bmpScale = Bitmap.createScaledBitmap(bmp,200,200,false);
+        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.img);
+        Bitmap bmpScale = Bitmap.createScaledBitmap(bmp, 200, 200, false);
 
         PdfDocument myPdfDocument = new PdfDocument();
         Paint myPaint = new Paint();
@@ -201,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
         PdfDocument.Page myPage1 = myPdfDocument.startPage(myPageInfo);
         Canvas canvas = myPage1.getCanvas();
 
-        canvas.drawBitmap(bmpScale,40,50,myPaint);
+        canvas.drawBitmap(bmpScale, 40, 50, myPaint);
 
         myPdfDocument.finishPage(myPage1);
 
@@ -212,4 +213,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @OnClick(R.id.buttonInvoice)
+    public void goToInvoiceInputActivity() {
+        startActivity(new Intent(this,InvoiceInputActivity.class));
+    }
 }
