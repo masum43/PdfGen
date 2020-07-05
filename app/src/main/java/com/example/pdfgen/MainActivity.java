@@ -2,6 +2,8 @@ package com.example.pdfgen;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -33,7 +35,9 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.button3)
     Button customerInfoBtn;
 
-    String[] infoArray = new String[]{"Name","Company Name","Address","Phone","Email"};
+    String[] infoArray = new String[]{"Name", "Company Name", "Address", "Phone", "Email"};
+    @BindView(R.id.button4)
+    Button imageOnPdfBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @OnClick({R.id.button, R.id.button2})
+    @OnClick({R.id.button, R.id.button2,R.id.button3,R.id.button4})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.button:
@@ -61,13 +65,32 @@ public class MainActivity extends AppCompatActivity {
             case R.id.button2:
                 try {
                     createButton2Pdf();
+                    Toast.makeText(this, "Generated successfully...", Toast.LENGTH_SHORT).show();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 Toast.makeText(this, "Pdf Generated", Toast.LENGTH_SHORT).show();
                 break;
+            case R.id.button3:
+                    try {
+                        createCustomerInfoPdf();
+                        Toast.makeText(this, "Generated successfully...", Toast.LENGTH_SHORT).show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+            case R.id.button4:
+                try {
+                    createImagePdf();
+                    Toast.makeText(this, "Generated successfully...", Toast.LENGTH_SHORT).show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
         }
     }
+
+
 
     private void createButton1Pdf() throws IOException {
         PdfDocument myPdfDocument = new PdfDocument();
@@ -107,15 +130,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @OnClick(R.id.button3)
-    public void onViewClicked() {
-        try {
-            createCustomerInfoPdf();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void createCustomerInfoPdf() throws IOException {
         PdfDocument myPdfDocument = new PdfDocument();
         Paint paint = new Paint();
@@ -126,49 +140,48 @@ public class MainActivity extends AppCompatActivity {
 
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setTextSize(12.0f);
-        canvas.drawText("Masum Enterprise",myPageInfo.getPageHeight()/2,30,paint);
+        canvas.drawText("Masum Enterprise", myPageInfo.getPageHeight() / 2, 30, paint);
 
         paint.setTextSize(6.0f);
         paint.setTextScaleX(1.5f);
-        paint.setColor(Color.rgb(122,119,119));
-        canvas.drawText("Ramchandrapur, Muradnagar, Cumilla",myPageInfo.getPageHeight()/2,40,paint);
+        paint.setColor(Color.rgb(122, 119, 119));
+        canvas.drawText("Ramchandrapur, Muradnagar, Cumilla", myPageInfo.getPageHeight() / 2, 40, paint);
         paint.setTextScaleX(1f);
 
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setTextSize(9.0f);
-        paint.setColor(Color.rgb(122,118,118));
-        canvas.drawText("Customer Information",10,70,paint);
+        paint.setColor(Color.rgb(122, 118, 118));
+        canvas.drawText("Customer Information", 10, 70, paint);
 
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setTextSize(8.0f);
         paint.setColor(Color.BLACK);
         int startXpos = 10;
-        int endXpos = myPageInfo.getPageWidth()-10;
+        int endXpos = myPageInfo.getPageWidth() - 10;
         int startYpos = 100;
-        for (int i =0; i<infoArray.length;i++)
-        {
-            canvas.drawText(infoArray[i],startXpos,startYpos,paint);
-            canvas.drawLine(startXpos,startYpos+3,endXpos,startYpos+3,paint);
-            startYpos+=20;
+        for (int i = 0; i < infoArray.length; i++) {
+            canvas.drawText(infoArray[i], startXpos, startYpos, paint);
+            canvas.drawLine(startXpos, startYpos + 3, endXpos, startYpos + 3, paint);
+            startYpos += 20;
         }
-        canvas.drawLine(80,92,80,190,paint);
+        canvas.drawLine(80, 92, 80, 190, paint);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(2);
 
-        canvas.drawRect(10,200,myPageInfo.getPageWidth()-10,300,paint);
-        canvas.drawLine(85,200,85,300,paint);
-        canvas.drawLine(163,200,163,300,paint);
+        canvas.drawRect(10, 200, myPageInfo.getPageWidth() - 10, 300, paint);
+        canvas.drawLine(85, 200, 85, 300, paint);
+        canvas.drawLine(163, 200, 163, 300, paint);
         paint.setStrokeWidth(0);
         paint.setStyle(Paint.Style.FILL);
 
-        canvas.drawText("Photo",35,250,paint);
-        canvas.drawText("Photo",110,250,paint);
-        canvas.drawText("Photo",190,250,paint);
+        canvas.drawText("Photo", 35, 250, paint);
+        canvas.drawText("Photo", 110, 250, paint);
+        canvas.drawText("Photo", 190, 250, paint);
 
-        canvas.drawText("Note",10,320,paint);
-        canvas.drawLine(35,325,myPageInfo.getPageWidth()-10,325,paint);
-        canvas.drawLine(10,345,myPageInfo.getPageWidth()-10,345,paint);
-        canvas.drawLine(10,345,myPageInfo.getPageWidth()-10,345,paint); //365
+        canvas.drawText("Note", 10, 320, paint);
+        canvas.drawLine(35, 325, myPageInfo.getPageWidth() - 10, 325, paint);
+        canvas.drawLine(10, 345, myPageInfo.getPageWidth() - 10, 345, paint);
+        canvas.drawLine(10, 365, myPageInfo.getPageWidth() - 10, 365, paint);
 
         myPdfDocument.finishPage(myPage1);
 
@@ -176,4 +189,27 @@ public class MainActivity extends AppCompatActivity {
         myPdfDocument.writeTo(new FileOutputStream(file));
         myPdfDocument.close();
     }
+
+    private void createImagePdf() throws IOException {
+        Bitmap bmp = BitmapFactory.decodeResource(getResources(),R.drawable.img);
+        Bitmap bmpScale = Bitmap.createScaledBitmap(bmp,200,200,false);
+
+        PdfDocument myPdfDocument = new PdfDocument();
+        Paint myPaint = new Paint();
+
+        PdfDocument.PageInfo myPageInfo = new PdfDocument.PageInfo.Builder(250, 400, 1).create();
+        PdfDocument.Page myPage1 = myPdfDocument.startPage(myPageInfo);
+        Canvas canvas = myPage1.getCanvas();
+
+        canvas.drawBitmap(bmpScale,40,50,myPaint);
+
+        myPdfDocument.finishPage(myPage1);
+
+        File file = new File(Environment.getExternalStorageDirectory(), "/CustomerInfoPdf.pdf");
+        myPdfDocument.writeTo(new FileOutputStream(file));
+        myPdfDocument.close();
+
+    }
+
+
 }
