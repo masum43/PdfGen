@@ -129,8 +129,10 @@ public class MainActivity extends AppCompatActivity {
         canvas.drawText("Masum Enterprise",myPageInfo.getPageHeight()/2,30,paint);
 
         paint.setTextSize(6.0f);
+        paint.setTextScaleX(1.5f);
         paint.setColor(Color.rgb(122,119,119));
         canvas.drawText("Ramchandrapur, Muradnagar, Cumilla",myPageInfo.getPageHeight()/2,40,paint);
+        paint.setTextScaleX(1f);
 
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setTextSize(9.0f);
