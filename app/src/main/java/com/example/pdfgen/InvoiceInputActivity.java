@@ -1,5 +1,6 @@
 package com.example.pdfgen;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -12,8 +13,10 @@ import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -21,6 +24,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,16 +56,13 @@ public class InvoiceInputActivity extends AppCompatActivity {
 
     }
 
-    @OnClick({R.id.spinner, R.id.spinner2, R.id.btnSubmit})
+    @OnClick( R.id.btnSubmit)
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.spinner:
-                break;
-            case R.id.spinner2:
-                break;
             case R.id.btnSubmit:
                 try {
                     createInvoice();
+                    Toast.makeText(this, "Generated....", Toast.LENGTH_SHORT).show();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -136,22 +137,20 @@ public class InvoiceInputActivity extends AppCompatActivity {
         canvas.drawText("Apple juice",200,950,paint);
         canvas.drawText("100",700,950,paint);
         canvas.drawText(input1Edt.getEditText().getText().toString(),900,950,paint);
-        canvas.drawText("Mango juice",700,950,paint);
         total1 = Float.parseFloat(input1Edt.getEditText().getText().toString());
         paint.setTextAlign(Paint.Align.RIGHT);
         canvas.drawText(String.valueOf(total1),pageWidth-40,950,paint);
 
+        paint.setTextAlign(Paint.Align.LEFT);
         canvas.drawText("2",40,1050,paint);
         canvas.drawText("Mango juice",200,1050,paint);
         canvas.drawText("700",700,1050,paint);
         canvas.drawText(input1Edt.getEditText().getText().toString(),900,1050,paint);
-        canvas.drawText("Mango juice",700,1050,paint);
         total1 = Float.parseFloat(input1Edt.getEditText().getText().toString());
         paint.setTextAlign(Paint.Align.RIGHT);
         canvas.drawText(String.valueOf(total1),pageWidth-40,1050,paint);
 
         canvas.drawLine(680,1200,pageWidth-20,1200,paint);
-        canvas.drawText("Sub Total",700,1250,paint);
         canvas.drawText("Sub Total",900,1250,paint);
         paint.setTextAlign(Paint.Align.RIGHT);
         canvas.drawText("1000",pageWidth-40,1250,paint);
@@ -170,9 +169,33 @@ public class InvoiceInputActivity extends AppCompatActivity {
 
         myPdfDocument.finishPage(myPage1);
 
-        File file = new File(Environment.getExternalStorageDirectory(), "/CustomerInfoPdf.pdf");
-        myPdfDocument.writeTo(new FileOutputStream(file));
-        myPdfDocument.close();
+//        File file = new File(Environment.getExternalStorageDirectory(), "/CustomerInvoicePdf.pdf");
+//        myPdfDocument.writeTo(new FileOutputStream(file));
+//        myPdfDocument.close();
 
+        String folder = Environment.getExternalStorageDirectory().getPath() + "/documents";
+        File folderFile = new File(folder);
+        if (!folderFile.exists()) {
+            folderFile.mkdirs();
+        }
+        String path = folder + "/Calcuradora_" + System.currentTimeMillis() + ".pdf";
+        File myFile = new File(path);
+        FileOutputStream fOut = new FileOutputStream(myFile);
+        OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
+        myPdfDocument.writeTo(fOut);
+        myPdfDocument.close();
+        myOutWriter.close();
+        fOut.close();
+        Toast.makeText(getBaseContext(), "File Saved on " + path, Toast.LENGTH_LONG).show();
+        openPdfViewer(myFile);
+
+    }
+
+    private void openPdfViewer(File file) { //need to add provider in manifest and filepaths.xml
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(FileProvider.getUriForFile(this,
+                BuildConfig.APPLICATION_ID + ".provider", file), "application/pdf");
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivityForResult(intent, 101);
     }
 }
